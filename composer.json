@@ -18,10 +18,5 @@
       "Audi2014\\Repo\\": "src/"
     }
   },
-  "repositories": [
-    {
-      "type": "git",
-      "url": "https://github.com/audi2014/php7-repo.git"
-    }
-  ]
+  "homepage": "https://github.com/audi2014/php7-repo.git"
 }
