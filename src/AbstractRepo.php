@@ -24,7 +24,7 @@ abstract class AbstractRepo implements RepoInterface {
         $this->logger = $logger;
     }
 
-    private function log($str) {
+    protected function log($str) {
         if ($this->logger) {
             ($this->logger)($str);
         } else {
@@ -36,7 +36,7 @@ abstract class AbstractRepo implements RepoInterface {
      * @param $sql
      * @return \PDOStatement
      */
-    private function prepare($sql): \PDOStatement {
+    protected function prepare($sql): \PDOStatement {
         if (in_array('prepare', $this->log_events)) {
             $this->log('prepare: ' . $sql);
         }
@@ -44,7 +44,7 @@ abstract class AbstractRepo implements RepoInterface {
     }
 
 
-    private function execute(\PDOStatement $stm, $args) {
+    protected function execute(\PDOStatement $stm, $args) {
         if (in_array('execute', $this->log_events)) {
             $this->log('execute: ' . $stm->queryString);
             $this->log('execute: ' . json_encode($args));
@@ -118,129 +118,6 @@ abstract class AbstractRepo implements RepoInterface {
         if ($whereKey === 'id') return "{$this->getTable()}.$whereKey";
         return $whereKey;
     }
-
-    //========================================
-
-//todo: use repo-query
-//    public function fetchQueryPageItems(RequestQueryPageInterface $query): array {
-//        $sql = <<<MySQL
-//SELECT {$this->getFieldsSql()}
-//FROM {$this->getTable()}
-//{$this->getJoinsSql()}
-//{$query->getWhereSql()}
-//{$this->getGroupBySql()}
-//{$query->getHavingSql()}
-//{$query->getOrderBySql()}
-//limit {$query->getOffset()}, {$query->getCount()}
-//MySQL;
-//        $data = $this->fetchAllBySqlAndArgs(
-//            $sql,
-//            $query->getExecuteValues()
-//        );
-//        return $data;
-//
-//    }
-
-//    public function deleteQueryItems(RequestQueryInterface $query, ?int $count = 0): int {
-//        if ($count) $count = "LIMIT $count";
-//        else $count = "";
-//
-//        $sql = <<<MySQL
-//DELETE FROM {$this->getTable()}
-//{$query->getWhereSql()}
-//{$query->getHavingSql()}
-//$count
-//MySQL;
-//        return $this->deleteRowsBySql(
-//            $sql,
-//            $query->getExecuteValues()
-//        );
-//
-//    }
-//
-//    public function fetchQueryItems(RequestQueryInterface $query, ?int $count = 0): array {
-//        if ($count) $count = "LIMIT $count";
-//        else $count = "";
-//
-//        $sql = <<<MySQL
-//SELECT {$this->getFieldsSql()}
-//FROM {$this->getTable()}
-//{$this->getJoinsSql()}
-//{$query->getWhereSql()}
-//{$this->getGroupBySql()}
-//{$query->getHavingSql()}
-//{$query->getOrderBySql()}
-//$count
-//MySQL;
-//        $data = $this->fetchAllBySqlAndArgs(
-//            $sql,
-//            $query->getExecuteValues()
-//        );
-//        return $data;
-//
-//    }
-//
-//    public function fetchQueryItem(RequestQueryInterface $query) {
-//        $sql = <<<MySQL
-//SELECT {$this->getFieldsSql()}
-//FROM {$this->getTable()}
-//{$this->getJoinsSql()}
-//{$query->getWhereSql()}
-//{$this->getGroupBySql()}
-//{$query->getHavingSql()}
-//{$query->getOrderBySql()}
-//LIMIT 0,1
-//MySQL;
-//        $data = $this->fetchFirstBySqlAndArgs(
-//            $sql,
-//            $query->getExecuteValues()
-//        );
-//        return $data;
-//    }
-//
-//    /**
-//     * @param RequestQueryInterface $query
-//     * @return int
-//     * @throws \Exception
-//     */
-//    public function fetchQueryCount(RequestQueryInterface $query): int {
-//
-//        if (!empty($this->getFieldsForCount())) {
-//            $fieldsForCountSql = "{$this->getGroupBy()} as count_id, " . implode(', ', $this->getFieldsForCount());
-//            $sql = /** @lang MySQL */
-//                <<<SQL
-//SELECT count(DISTINCT selection.count_id) as `count` FROM (
-//    SELECT $fieldsForCountSql
-//    FROM {$this->getTable()}
-//    {$this->getJoinsSql()}
-//    {$query->getWhereSql()}
-//    {$this->getGroupByForCountSql()}
-//    {$query->getHavingSql()}
-//) as selection
-//SQL;
-//        } else {
-//            $sql = /** @lang MySQL */
-//                <<<SQL
-//SELECT count(DISTINCT {$this->getGroupBy()}) as `count`
-//FROM {$this->getTable()}
-//{$this->getJoinsSql()}
-//{$query->getWhereSql()}
-//{$this->getGroupByForCountSql()}
-//SQL;
-//        }
-//
-//
-//        $stmt = $this->prepare($sql);
-//        $this->execute($stmt, $query->getExecuteValues());
-//        $rows = $stmt->fetchAll(\PDO::FETCH_COLUMN);
-//        $r_count = count($rows);
-//        if ($r_count !== 1) {
-//            throw new \Exception("bad fetchQueryCount sql: count of returned counters !== 1. returned: ($r_count)");
-//        }
-//        return reset($rows);
-//    }
-//    //========================================
-//
 
     /**
      * @param $data
@@ -508,7 +385,7 @@ abstract class AbstractRepo implements RepoInterface {
         }
         $columnNames = implode(",", $updateSet);
         $where = implode(" AND", $whereSet);
-        $sql = /** @lang SQL */
+        $sql = /** @lang MySQL */
             "UPDATE $table SET  $columnNames WHERE $where $end";
         $query = $this->prepare($sql);
         $this->execute($query, $values);

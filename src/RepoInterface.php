@@ -13,21 +13,6 @@ interface RepoInterface {
      * @return \PDO
      */
     public function getPdo(): \PDO;
-//todo: use repo-query
-//    public function fetchQueryPageItems(RequestQueryPageInterface $query): array;
-//
-//    public function fetchQueryItems(RequestQueryInterface $query): array;
-//
-//    public function deleteQueryItems(RequestQueryInterface $query): int;
-//
-//    public function fetchQueryItem(RequestQueryInterface $query);
-//
-//    /**
-//     * @param RequestQueryInterface $query
-//     * @return int
-//     * @throws \Exception
-//     */
-//    public function fetchQueryCount(RequestQueryInterface $query): int;
 
     /**
      * @param $data
